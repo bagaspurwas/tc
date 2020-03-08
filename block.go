@@ -26,7 +26,7 @@ func GenerateBlockHeader(block *Block) []byte {
     data := bytes.Join(
             [][]byte{
                 block.PrevBlockHash,
-                block.Data,
+                block.Transactions,
                 IntToHex(block.Timestamp),
                 IntToHex(block.Nonce),
             },
@@ -35,14 +35,14 @@ func GenerateBlockHeader(block *Block) []byte {
     return data
 }
 
-func (b *Block) HashBlock() {
-    headers := GenerateBlockHeader(b)
+func (block *Block) HashBlock() {
+    headers := GenerateBlockHeader(block)
     hash := sha256.Sum256(headers)
-    b.Hash = hash[:]
+    block.Hash = hash[:]
 }
 
-func NewBlock(data string, prevBlockHash []byte) *Block {
-    block := &Block{time.Now().Unix(), []byte(data), prevBlockHash, []byte{}, 0}
+func NewBlock(transactions []*Transaction, prevBlockHash []byte) *Block {
+    block := &Block{time.Now().Unix(), []byte(transactions), prevBlockHash, []byte{}, 0}
     block.HashBlock()
     return block
 }
