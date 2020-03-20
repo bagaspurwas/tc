@@ -1,15 +1,12 @@
 package main
 
 import (
-	"./models"
 	"time"
 	"crypto/sha256"
 	"bytes"
     "encoding/binary"
     "log"
 )
-
-type Block models.Block
 
 // IntToHex converts an int64 to a byte array
 func IntToHex(num int64) []byte {
@@ -26,7 +23,6 @@ func GenerateBlockHeader(block *Block) []byte {
     data := bytes.Join(
             [][]byte{
                 block.PrevBlockHash,
-                block.Transactions,
                 IntToHex(block.Timestamp),
                 IntToHex(block.Nonce),
             },
@@ -42,7 +38,7 @@ func (block *Block) HashBlock() {
 }
 
 func NewBlock(transactions []*Transaction, prevBlockHash []byte) *Block {
-    block := &Block{time.Now().Unix(), []byte(transactions), prevBlockHash, []byte{}, 0}
+    block := &Block{time.Now().Unix(), transactions, prevBlockHash, []byte{}, 0}
     block.HashBlock()
     return block
 }

@@ -1,26 +1,20 @@
 package main
 
 import (
-	"./models"
 	"crypto/rsa"
 	"crypto/rand"
 )
 
-type PartySafe models.PartySafe
-
 func GenerateKeyPair() (*rsa.PrivateKey, *rsa.PublicKey) {
 	rng := rand.Reader
-	PrivKey := rsa.GenerateKey(rng, 4096)
-	PubKey := rsa.Public()
+	PrivKey, _ := rsa.GenerateKey(rng, 4096)
+	PubKey := &PrivKey.PublicKey
 	return PrivKey, PubKey
 }
 
-func GeneratePartySafe(Name string, Address string) *PartySafe {
+func GenerateParty(Name string, Address string) (*PartySafe, *Party) {
 	PrivKey, PubKey := GenerateKeyPair()
-	PS := PartySafe{Name, Address, PrivKey, PubKey}
-	return PS
-}
-
-func GenerateParty(Name string, Address string) *Party {
-	
+	PS := PartySafe{Name, Address, PubKey, PrivKey}
+	Party := Party{Name, Address, PubKey}
+	return &PS, &Party
 }

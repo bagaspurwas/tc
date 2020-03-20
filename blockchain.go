@@ -1,6 +1,7 @@
 package main
 import (
     "fmt"
+    "encoding/json"
 )
 
 type Blockchain struct {
@@ -8,8 +9,12 @@ type Blockchain struct {
 }
 
 func InitGenesis() *Block {
-    data := "This is genesis block"
-    return NewBlock(data,[]byte{})
+	SafePartyA, PartyA := GenerateParty("Genesis", "Genesis")
+	_ , PartyB := GenerateParty("Genesis2", "Genesis2")
+	TX1data := NewTransactionData(PartyA, PartyB, "Genesis", 0, "")
+	TX1 := SafePartyA.NewTransaction(TX1data, nil)
+	var TXs = []*Transaction {TX1}
+    return NewBlock(TXs, []byte{})
 }
 
 func InitBlockchain() *Blockchain {
@@ -18,15 +23,15 @@ func InitBlockchain() *Blockchain {
 
 func (bc *Blockchain) Print() {
 	for _, block := range bc.blocks {
-		fmt.Printf("------------- block --------------\n")
-		fmt.Printf("Prev. hash: %x\n", block.PrevBlockHash)
-		fmt.Printf("Data: %s\n", block.Data)
-		fmt.Printf("Hash: %x\n", block.Hash)
-		fmt.Printf("Nonce: %x\n", block.Nonce)
+		block_JSON, err := json.Marshal(block)
+		if err != nil {
+			return
+		}
+		fmt.Printf("%s\n", block_JSON)
 	}
 }
 
-func (bc *Blockchain) AddBlock(data string) {
+func (bc *Blockchain) AddBlock(data []*Transaction) {
 	prevBlock := bc.blocks[len(bc.blocks)-1]
 	newBlock := NewBlock(data, prevBlock.Hash)
 	minedBlock := Work(newBlock)	
