@@ -22,7 +22,7 @@ type PartySafe struct {
 type Party struct {
     Name            string    		`bson:"name" json:"name"` 
     Address         string    		`bson:"address" json:"address"`
-    PubKey          *rsa.PublicKey  `bson:"publickey" json:"publickey"`
+    PubKey          []byte          `bson:"publickey" json:"publickey"`
 }
 
 type Transaction struct {

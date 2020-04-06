@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/rsa"
 	"crypto/rand"
+	"crypto/x509"
 )
 
 func GenerateKeyPair() (*rsa.PrivateKey, *rsa.PublicKey) {
@@ -14,7 +15,11 @@ func GenerateKeyPair() (*rsa.PrivateKey, *rsa.PublicKey) {
 
 func GenerateParty(Name string, Address string) (*PartySafe, *Party) {
 	PrivKey, PubKey := GenerateKeyPair()
+	PubKeyByte, err := x509.MarshalPKIXPublicKey(PubKey)
+	if err != nil {
+		panic(err)
+	}
 	PS := PartySafe{Name, Address, PubKey, PrivKey}
-	Party := Party{Name, Address, PubKey}
+	Party := Party{Name, Address, []byte(PubKeyByte)}
 	return &PS, &Party
 }

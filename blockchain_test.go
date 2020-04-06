@@ -26,7 +26,7 @@ func TestBlockchain(t *testing.T) {
 	if len(bc.blocks) != 2 {
 		t.Errorf("blockchain length must be 2")	
 	}
-	for _, b := range bc.blocks {
+	for _, b := range bc.blocks[1:] {
 		if !Validate(b) {
 			t.Errorf("Block hash mismatch")	
 		}

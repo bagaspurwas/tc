@@ -11,14 +11,10 @@ import (
 
 func GenerateTXHeader(TX *Transaction) []byte {
 	TXData := TX.Data
-	IssuerPK, err := x509.MarshalPKIXPublicKey(TXData.Issuer.PubKey)
-	if err != nil {
-		return nil
-	}
-	RecvPK, err := x509.MarshalPKIXPublicKey(TXData.Receiver.PubKey)
-	if err != nil {
-		return nil
-	}
+
+	IssuerPK := TXData.Issuer.PubKey
+	RecvPK := TXData.Receiver.PubKey
+
     data := bytes.Join(
             [][]byte{
             	[]byte(IssuerPK),
@@ -48,8 +44,12 @@ func (TX *Transaction) Sign(PrivateKey *rsa.PrivateKey) {
 }
 
 func (TX *Transaction) VerifySignature() {
-	PubKey := TX.Data.Issuer.PubKey
-	err := rsa.VerifyPKCS1v15(PubKey, crypto.SHA256, TX.Hash[:], TX.Signature)
+	PK, err := x509.ParsePKIXPublicKey(TX.Data.Issuer.PubKey)
+	PubKey := PK.(*rsa.PublicKey)
+	if err != nil {
+	    return
+	}
+	err = rsa.VerifyPKCS1v15(PubKey, crypto.SHA256, TX.Hash[:], TX.Signature)
 	if err != nil {
 	    return
 	}
